@@ -8,11 +8,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
-
   Hive.registerAdapter(MovieAdapter());
   await Hive.openBox<Movie>('movies');
 
-  // Загружаем текущую тему из SharedPreferences
   final prefs = await SharedPreferences.getInstance();
   final isDarkTheme = prefs.getBool('isDarkTheme') ?? false;
 
@@ -37,7 +35,6 @@ class _MyAppState extends State<MyApp> {
     _isDarkTheme = widget.isDarkTheme;
   }
 
-  // Смена темы и сохранение в SharedPreferences
   void _toggleTheme(bool isDark) async {
     setState(() {
       _isDarkTheme = isDark;
@@ -52,8 +49,39 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Movies',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.indigo,
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.indigo,
+          foregroundColor: Colors.white,
+        ),
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.indigo,
+        scaffoldBackgroundColor: Colors.black,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black87,
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.indigo,
+          foregroundColor: Colors.white,
+        ),
+      ),
       themeMode: _isDarkTheme ? ThemeMode.dark : ThemeMode.light,
       home: HomePage(
         onThemeChanged: _toggleTheme,

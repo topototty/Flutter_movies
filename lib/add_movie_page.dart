@@ -14,15 +14,12 @@ class AddMoviePage extends StatefulWidget {
 class _AddMoviePageState extends State<AddMoviePage> {
   final _formKey = GlobalKey<FormState>();
 
-  // Контроллеры для полей ввода
   final _titleController = TextEditingController();
   final _genreController = TextEditingController();
   final _yearController = TextEditingController();
 
-  // Для выбранного изображения
   File? _selectedImage;
 
-  // Метод для выбора изображения
   Future<void> _pickImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -32,7 +29,6 @@ class _AddMoviePageState extends State<AddMoviePage> {
     }
   }
 
-  // Метод для сохранения фильма
   void _saveMovie() {
     if (_formKey.currentState!.validate() && _selectedImage != null) {
       final box = Hive.box<Movie>('movies');
@@ -45,12 +41,12 @@ class _AddMoviePageState extends State<AddMoviePage> {
         imagePath: _selectedImage!.path,
       );
 
-      box.add(newMovie); // Сохраняем фильм в Hive
+      box.add(newMovie);
 
-      Navigator.pop(context); // Закрываем экран добавления
+      Navigator.pop(context);
     } else if (_selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select an image')),
+        const SnackBar(content: Text('Выберите изображение')),
       );
     }
   }
@@ -59,7 +55,7 @@ class _AddMoviePageState extends State<AddMoviePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Movie'),
+        title: const Text('Добавление фильма'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -69,34 +65,41 @@ class _AddMoviePageState extends State<AddMoviePage> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
+                decoration: const InputDecoration(labelText: 'Название'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
+                    return 'Введите название';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _genreController,
-                decoration: const InputDecoration(labelText: 'Genre'),
+                decoration: const InputDecoration(labelText: 'Жанр'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a genre';
+                    return 'Введите жанр';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _yearController,
-                decoration: const InputDecoration(labelText: 'Year'),
+                decoration: const InputDecoration(labelText: 'Год'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a year';
+                    return 'Введите год выхода фильма';
                   }
-                  if (int.tryParse(value) == null) {
-                    return 'Please enter a valid number';
+                  if (value.length != 4) {
+                    return 'Год должен содержать 4 цифры';
+                  }
+                  final year = int.tryParse(value);
+                  if (year == null) {
+                    return 'Введите корректное число';
+                  }
+                  if (year < 1888 || year > DateTime.now().year) {
+                    return 'Введите год от 1888 до ${DateTime.now().year}';
                   }
                   return null;
                 },
@@ -110,7 +113,7 @@ class _AddMoviePageState extends State<AddMoviePage> {
                         height: 150,
                         color: Colors.grey[300],
                         child: const Center(
-                          child: Text('Tap to select an image'),
+                          child: Text('Нажмите, чтобы выбрать изображение'),
                         ),
                       )
                     : Image.file(
@@ -123,7 +126,7 @@ class _AddMoviePageState extends State<AddMoviePage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveMovie,
-                child: const Text('Save Movie'),
+                child: const Text('Сохранить фильм'),
               ),
             ],
           ),

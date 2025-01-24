@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'movie_model.g.dart';
 
-@HiveType(typeId: 0) // Уникальный идентификатор для модели
+@HiveType(typeId: 0)
 class Movie {
   @HiveField(0)
   final int? id;
